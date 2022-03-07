@@ -2,6 +2,9 @@
 
 package lesson6.task1
 
+import lesson2.task2.daysInMonth
+
+
 // Урок 6: разбор строк, исключения
 // Максимальное количество баллов = 13
 // Рекомендуемое количество баллов = 11
@@ -74,7 +77,36 @@ fun main() {
  * Обратите внимание: некорректная с точки зрения календаря дата (например, 30.02.2009) считается неверными
  * входными данными.
  */
-fun dateStrToDigit(str: String): String = TODO()
+fun dateStrToDigit(str: String): String {
+    val parts = str.split(" ")
+    try {
+        val day = parts[0].toInt()
+        val name = parts[1]
+        val year = parts[2].toInt()
+        val month = when (name) {
+            "января" -> 1
+            "февраля" -> 2
+            "марта" -> 3
+            "апреля" -> 4
+            "мая" -> 5
+            "июня" -> 6
+            "июля" -> 7
+            "августа" -> 8
+            "сентября" -> 9
+            "октября" -> 10
+            "ноября" -> 11
+            "декабря" -> 12
+            else -> return ""
+        }
+        return if (day in 1..daysInMonth(month, year))
+            String.format("%02d.%02d.%d", day, month, year)
+        else ""
+    } catch (e: NumberFormatException) {
+        return ""
+    } catch (l: IndexOutOfBoundsException) {
+        return ""
+    }
+}
 
 /**
  * Средняя (4 балла)
@@ -114,7 +146,14 @@ fun flattenPhoneNumber(phone: String): String = TODO()
  * Прочитать строку и вернуть максимальное присутствующее в ней число (717 в примере).
  * При нарушении формата входной строки или при отсутствии в ней чисел, вернуть -1.
  */
-fun bestLongJump(jumps: String): Int = TODO()
+fun bestLongJump(jumps: String): Int {
+    val matchResult = Regex("[ 0-9%-]+").matches(jumps)
+    if (!matchResult) {
+        return -1
+    }
+    val reg = Regex("\\d+")
+    return reg.findAll(jumps).map { it.value.toInt() }.toList().maxOrNull() ?: -1
+}
 
 /**
  * Сложная (6 баллов)

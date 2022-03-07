@@ -4,6 +4,7 @@ package lesson2.task1
 
 import lesson1.task1.discriminant
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.sqrt
 
 // Урок 2: ветвления (здесь), логический тип (см. 2.2).
@@ -68,7 +69,17 @@ fun minBiRoot(a: Double, b: Double, c: Double): Double {
  * Мой возраст. Для заданного 0 < n < 200, рассматриваемого как возраст человека,
  * вернуть строку вида: «21 год», «32 года», «12 лет».
  */
-fun ageDescription(age: Int): String = TODO()
+fun ageDescription(age: Int): String =
+    when (age) {
+        in 11..19 -> "$age лет"
+        in 111..119 -> "$age лет"
+        else -> when (val lastd = age % 10) {
+            0 -> "$age лет"
+            1 -> "$age год"
+            in 2..4 -> "$age года"
+            else -> "$age лет"
+        }
+    }
 
 /**
  * Простая (2 балла)
@@ -81,7 +92,18 @@ fun timeForHalfWay(
     t1: Double, v1: Double,
     t2: Double, v2: Double,
     t3: Double, v3: Double
-): Double = TODO()
+): Double {
+    val half = (t1 * v1 + t2 * v2 + t3 * v3) / 2
+    val s1 = t1 * v1
+    val s2 = t1 * v1 + t2 * v2
+    val s3 = t1 * v1 + t2 * v2 + t3 * v3
+    return when (half) {
+        in 0.0..s1 -> half / v1
+        in s1..s2 -> t1 + (half - s1) / v2
+        in s2..s3 -> t1 + t2 + (half - s2) / v3
+        else -> 0.0
+    }
+}
 
 /**
  * Простая (2 балла)
@@ -96,7 +118,12 @@ fun whichRookThreatens(
     kingX: Int, kingY: Int,
     rookX1: Int, rookY1: Int,
     rookX2: Int, rookY2: Int
-): Int = TODO()
+): Int {
+    var winner = 0
+    if (kingX == rookX1 || kingY == rookY1) ++winner
+    if (kingX == rookX2 || kingY == rookY2) winner += 2
+    return winner
+}
 
 /**
  * Простая (2 балла)
@@ -132,4 +159,9 @@ fun triangleKind(a: Double, b: Double, c: Double): Int = TODO()
  * Найти длину пересечения отрезков AB и CD.
  * Если пересечения нет, вернуть -1.
  */
-fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int = TODO()
+fun segmentLength(a: Int, b: Int, c: Int, d: Int): Int {
+    val s2 = min(b, d)
+    val s1 = max(a, c)
+    return if (s2 - s1 >= 0) s2 - s1
+    else -1
+}

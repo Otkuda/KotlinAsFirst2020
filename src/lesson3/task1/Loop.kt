@@ -3,6 +3,8 @@
 package lesson3.task1
 
 import kotlin.math.sqrt
+import kotlin.math.abs
+import lesson1.task1.sqr
 
 // Урок 3: циклы
 // Максимальное количество баллов = 9
@@ -72,7 +74,16 @@ fun digitCountInNumber(n: Int, m: Int): Int =
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun digitNumber(n: Int): Int = TODO()
+fun digitNumber(n: Int): Int {
+    var k = 0
+    var num = abs(n)
+    while (num >= 0) {
+        ++k
+        num /= 10
+        if (num == 0) break
+    }
+    return k
+}
 
 /**
  * Простая (2 балла)
@@ -80,6 +91,7 @@ fun digitNumber(n: Int): Int = TODO()
  * Найти число Фибоначчи из ряда 1, 1, 2, 3, 5, 8, 13, 21, ... с номером n.
  * Ряд Фибоначчи определён следующим образом: fib(1) = 1, fib(2) = 1, fib(n+2) = fib(n) + fib(n+1)
  */
+
 fun fib(n: Int): Int = TODO()
 
 /**
@@ -87,7 +99,12 @@ fun fib(n: Int): Int = TODO()
  *
  * Для заданного числа n > 1 найти минимальный делитель, превышающий 1
  */
-fun minDivisor(n: Int): Int = TODO()
+fun minDivisor(n: Int): Int {
+    for (i in 2..sqrt(n.toDouble()).toInt()) {
+        if (n % i == 0) return i
+    }
+    return n
+}
 
 /**
  * Простая (2 балла)
@@ -120,7 +137,17 @@ fun collatzSteps(x: Int): Int = TODO()
  * Для заданных чисел m и n найти наименьшее общее кратное, то есть,
  * минимальное число k, которое делится и на m и на n без остатка
  */
-fun lcm(m: Int, n: Int): Int = TODO()
+fun lcm(m: Int, n: Int): Int {
+    var a = m
+    var b = n
+    var gmd = m
+    while (a != b) {
+        if (a > b) a -= b
+        else b -= a
+        gmd = a
+    }
+    return (m * n) / gmd
+}
 
 /**
  * Средняя (3 балла)
@@ -134,20 +161,20 @@ fun isCoPrime(m: Int, n: Int): Boolean = TODO()
 /**
  * Средняя (3 балла)
  *
- * Для заданных чисел m и n, m <= n, определить, имеется ли хотя бы один точный квадрат между m и n,
- * то есть, существует ли такое целое k, что m <= k*k <= n.
- * Например, для интервала 21..28 21 <= 5*5 <= 28, а для интервала 51..61 квадрата не существует.
- */
-fun squareBetweenExists(m: Int, n: Int): Boolean = TODO()
-
-/**
- * Средняя (3 балла)
- *
  * Поменять порядок цифр заданного числа n на обратный: 13478 -> 87431.
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun revert(n: Int): Int = TODO()
+fun revert(n: Int): Int {
+    var num = n
+    var inverse = 0
+    while (num > 0) {
+        inverse *= 10
+        inverse += num % 10
+        num /= 10
+    }
+    return inverse
+}
 
 /**
  * Средняя (3 балла)
@@ -201,7 +228,21 @@ fun cos(x: Double, eps: Double): Double = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun squareSequenceDigit(n: Int): Int = TODO()
+fun squareSequenceDigit(n: Int): Int {
+    var k = 0
+    var number = 0
+    while (n > k) {
+        ++number
+        k += digitNumber(sqr(number))
+    }
+    number = sqr(number)
+    if (n != k) {
+        for (i in 1..(k - n)) {
+            number /= 10
+        }
+    }
+    return number % 10
+}
 
 /**
  * Сложная (5 баллов)
@@ -212,4 +253,23 @@ fun squareSequenceDigit(n: Int): Int = TODO()
  *
  * Использовать операции со строками в этой задаче запрещается.
  */
-fun fibSequenceDigit(n: Int): Int = TODO()
+fun fibSequenceDigit(n: Int): Int {
+    var k = 2
+    var number2 = 1
+    var sum = 1
+    return if (n <= 2) 1
+    else {
+        while (n > k) {
+            var number1 = number2
+            number2 = sum
+            sum = number1 + number2
+            k += digitNumber(sum)
+        }
+        if (n != k) {
+            for (i in 1..(k - n)) {
+                sum /= 10
+            }
+        }
+        sum % 10
+    }
+}

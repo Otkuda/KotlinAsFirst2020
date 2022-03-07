@@ -2,6 +2,8 @@
 
 package lesson5.task1
 
+import java.lang.Integer.max
+
 // Урок 5: ассоциативные массивы и множества
 // Максимальное количество баллов = 14
 // Рекомендуемое количество баллов = 9
@@ -132,7 +134,7 @@ fun subtractOf(a: MutableMap<String, String>, b: Map<String, String>) {
  * Простая (2 балла)
  *
  * Для двух списков людей найти людей, встречающихся в обоих списках.
- * В выходном списке не должно быть повторяюихся элементов,
+ * В выходном списке не должно быть повторяющихся элементов,
  * т. е. whoAreInBoth(listOf("Марат", "Семён, "Марат"), listOf("Марат", "Марат")) == listOf("Марат")
  */
 fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
@@ -154,7 +156,14 @@ fun whoAreInBoth(a: List<String>, b: List<String>): List<String> = TODO()
  *     mapOf("Emergency" to "911", "Police" to "02")
  *   ) -> mapOf("Emergency" to "112, 911", "Police" to "02")
  */
-fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> = TODO()
+fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<String, String> {
+    val result = mapA.toMutableMap()
+    for ((key, value) in mapB) {
+        if (key in result && value != result[key]) result[key] = result[key] + ", " + mapB[key]
+        else result[key] = value
+    }
+    return result
+}
 
 /**
  * Средняя (4 балла)
@@ -166,7 +175,9 @@ fun mergePhoneBooks(mapA: Map<String, String>, mapB: Map<String, String>): Map<S
  *   averageStockPrice(listOf("MSFT" to 100.0, "MSFT" to 200.0, "NFLX" to 40.0))
  *     -> mapOf("MSFT" to 150.0, "NFLX" to 40.0)
  */
-fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> = TODO()
+fun averageStockPrice(stockPrices: List<Pair<String, Double>>): Map<String, Double> =
+    stockPrices.groupBy { it.first }
+        .mapValues { it.value.map { pair -> pair.second }.average() }
 
 /**
  * Средняя (4 балла)
@@ -208,7 +219,8 @@ fun canBuildFrom(chars: List<Char>, word: String): Boolean = TODO()
  * Например:
  *   extractRepeats(listOf("a", "b", "a")) -> mapOf("a" to 2)
  */
-fun extractRepeats(list: List<String>): Map<String, Int> = TODO()
+fun extractRepeats(list: List<String>): Map<String, Int> =
+    list.groupingBy { it.toString() }.eachCount().filter { it.value > 1 }
 
 /**
  * Средняя (3 балла)
@@ -260,6 +272,7 @@ fun hasAnagrams(words: List<String>): Boolean = TODO()
  */
 fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<String>> = TODO()
 
+
 /**
  * Сложная (6 баллов)
  *
@@ -277,7 +290,14 @@ fun propagateHandshakes(friends: Map<String, Set<String>>): Map<String, Set<Stri
  *   findSumOfTwo(listOf(1, 2, 3), 4) -> Pair(0, 2)
  *   findSumOfTwo(listOf(1, 2, 3), 6) -> Pair(-1, -1)
  */
-fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
+fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> {
+    val map = mutableMapOf<Int, Int>()
+    for (i in list.indices) {
+        if (map[number - list[i]] != null) return Pair(map[number - list[i]]!!, i)
+        else map[list[i]] = i
+    }
+    return Pair(-1, -1)
+}
 
 /**
  * Очень сложная (8 баллов)
@@ -300,4 +320,33 @@ fun findSumOfTwo(list: List<Int>, number: Int): Pair<Int, Int> = TODO()
  *     450
  *   ) -> emptySet()
  */
-fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> = TODO()
+
+fun bagPacking(treasures: Map<String, Pair<Int, Int>>, capacity: Int): Set<String> {
+    val result = mutableSetOf<String>()
+    val a = Array(treasures.size + 1) { IntArray(capacity + 1) }
+    val names = treasures.toList().map { (name, _) -> name }
+    val weights = treasures.toList().map { (_, pair) -> pair.first }
+    val values = treasures.toList().map { (_, pair) -> pair.second }
+
+    for (k in 1..treasures.size) {
+        for (s in 1..capacity) {
+            a[k][s] = if (s >= weights[k - 1]) max(a[k - 1][s], a[k - 1][s - weights[k - 1]] + values[k - 1])
+            else a[k - 1][s]
+        }
+    }
+
+    fun findAns(k: Int, s: Int) {
+        when (a[k][s]) {
+            0 -> return
+            a[k - 1][s] -> findAns(k - 1, s)
+            else -> {
+                findAns(k - 1, s - weights[k - 1])
+                result.add(names[k - 1])
+            }
+        }
+    }
+
+    findAns(treasures.size, capacity)
+    return result
+}
+
